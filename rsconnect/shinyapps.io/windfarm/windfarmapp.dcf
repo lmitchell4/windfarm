@@ -5,6 +5,6 @@ account: windfarm
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 613155
-bundleId: 1754411
+bundleId: 1754498
 url: https://windfarm.shinyapps.io/windfarmapp/
-when: 1544492385.13743
+when: 1544496268.61996
