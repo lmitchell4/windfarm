@@ -21,9 +21,9 @@ prj$NetCapacityFactor <- prj[ ,GenerationMWhPerYear/(CapacityMW * 8760)]
 prj$NetCapacityFactorPerc <- paste0(round(prj$NetCapacityFactor,2),"%")
 prj$AverageGenerationMW <- prj[ ,GenerationMWhPerYear/8760]
 prj$PopupInfo <- prj[ ,paste('<b>Name:</b>', Name, '<br>',
-                            '<b>Average Generation (MW):</b>', round(AverageGenerationMW, 2), '<br>',
-                            '<b>Maximum Capacity (MW):</b>', round(CapacityMW, 2), '<br>',
-                            '<b>Net capacity factor:</b>', round(NetCapacityFactor,2))]
+                             '<b>Average Generation (MW):</b>', round(AverageGenerationMW, 2), '<br>',
+                             '<b>Maximum Capacity (MW):</b>', round(CapacityMW, 2), '<br>',
+                             '<b>Net capacity factor:</b>', round(NetCapacityFactor,2))]
 
 ## Order by net capacity factor for plotting (the most efficienct farms will show up on the top):
 setorder(prj, NetCapacityFactor, na.last=FALSE)
@@ -33,6 +33,17 @@ pal <- colorNumeric(
   palette = 'viridis',
   domain = prj$NetCapacityFactor
 )
+
+
+## Save these for use in sliders:
+minNetCap <- round(min(prj$NetCapacityFactor, na.rm=TRUE),2)
+maxNetCap <- round(max(prj$NetCapacityFactor, na.rm=TRUE),2)
+
+minAvgGen <- floor(min(prj$AverageGenerationMW, na.rm=TRUE))
+maxAvgGen <- ceiling(max(prj$AverageGenerationMW, na.rm=TRUE))
+
+minCap <- floor(min(prj$CapacityMW, na.rm=TRUE))
+maxCap <- ceiling(max(prj$CapacityMW, na.rm=TRUE))
 
 
 ## Application UI:
@@ -59,17 +70,11 @@ ui <- fluidPage(
     ),
     column(6,
            sliderInput('netCapacityFactor', 'Net Capacity Factor', 
-                       min=round(min(prj$NetCapacityFactor, na.rm=TRUE),2), max=round(max(prj$NetCapacityFactor, na.rm=TRUE),2), 
-                       value=c(round(min(prj$NetCapacityFactor, na.rm=TRUE),2), round(max(prj$NetCapacityFactor, na.rm=TRUE),2)), 
-                       width='90%'),
+                       min=minNetCap, max=maxNetCap, value=c(minNetCap, maxNetCap), width='90%'),
            sliderInput('averageGenerationMW', 'Average Power Generation (MW)', 
-                       min=floor(min(prj$AverageGenerationMW, na.rm=TRUE)), max=ceiling(max(prj$AverageGenerationMW, na.rm=TRUE)), 
-                       value=c(floor(min(prj$AverageGenerationMW, na.rm=TRUE)), ceiling(max(prj$AverageGenerationMW, na.rm=TRUE))), 
-                       width='90%'),
+                       min=minAvgGen, max=maxAvgGen, value=c(minAvgGen, maxAvgGen), width='90%'),
            sliderInput('capacityMW', 'Maximum Capacity (MW)', 
-                       min=floor(min(prj$CapacityMW, na.rm=TRUE)), max=ceiling(max(prj$CapacityMW, na.rm=TRUE)), 
-                       value=c(floor(min(prj$CapacityMW, na.rm=TRUE)), ceiling(max(prj$CapacityMW, na.rm=TRUE))), 
-                       width='90%')
+                       min=minCap, max=maxCap, value=c(minCap, maxCap), width='90%')
     ),
     column(5, offset = 0, 
            selectInput('windFarmName', 'Name', sort(unique(prj$Name)), multiple = TRUE, width='90%'),
@@ -133,5 +138,4 @@ server <- function(input, output) {
 
 ## Run the application:
 shinyApp(ui = ui, server = server)
-
 
